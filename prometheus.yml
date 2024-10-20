@@ -1,0 +1,47 @@
+---
+
+- host: all
+  become: true
+  tasks:
+
+  - name: Create Folder /srv/prometheus if not exist
+    file:
+      path: /srv/prometheus
+      mode: 0755
+      state; directory
+
+  - name: Create Folder /srv/alertmanager if not exist
+    file:
+      path: /srv/alertmanager
+      src: prometheus_main.yml
+      mode: 0644
+
+  - name: Create prometheus alert configuration file
+    copy;
+      dest: /srv/prometheus/prometheus_alerts_rules.yml
+      src: prometheus_alerts_rules.yml
+      mode: 0644
+
+  - name: Create Prometheus container
+    docker_container:
+      name: prometheus
+      restart_policy: always
+      image: prom/prometheus:
+
+  - name: Create Prometheus configuration file
+    copy:
+      dest: /srv/prometheus/prometheus.yml
+      src: prometheus_main.yml
+      mode: 0644
+
+  - name: Create prometheus alert configuration file
+    copy:
+      dest: /srv/prometheus/prometheus_alerts_rules.yml
+      src: prometheus_alerts_rules.yml
+      mode: 0644
+
+  - name: Create prometheus container
+    docker_container:
+      name: prometheus
+      restart_policy: always
+      image: prom/prometheus:
